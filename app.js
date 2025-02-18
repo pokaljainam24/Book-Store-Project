@@ -1,27 +1,22 @@
 const express = require("express");
 const db = require("./configs/database");
-const adminModel = require("./models/adminSchema");
 const Book = require("./models/bookSchema");
 const app = express();
 const port = 8059;
-let users = [];
-let loginUser = {
-  username: "Jainam",
-  password: "Jainam@123",
-};
 
-app.set("view engine", "ejs"); 
-app.use(express.static('public')); 
-app.use(express.urlencoded({ extended: true })); 
+app.set("view engine", "ejs");
+app.use(express.static('public'));
+app.use(express.urlencoded({ extended: true }));
+
+// Track admin login state
+let isAdminLoggedIn = false;
 
 // ---------------------- Home Route ----------------------
 app.get("/", (req, res) => {
-  Book.find({})  // Fetch all books
+  Book.find({})
     .then((allBooks) => {
       const bestSeller = allBooks.filter(book => book.bestseller === true);
       const popular = allBooks.filter(book => book.bestseller === false);
-
-      console.log("All Books:", allBooks); // Log to check the data
       res.render("index", { bestSeller, popular });
     })
     .catch((err) => {
@@ -30,111 +25,121 @@ app.get("/", (req, res) => {
     });
 });
 
-
-// ---------------------- Login Route ----------------------
-app.get("/login", (req, res) => {
-  res.render("login", { error: null }); 
-});
-
-// ---------------------- Book Form Route ----------------------
-app.get("/bookform", (req, res) => {
-  return res.render("bookform"); 
-});
-
-// ---------------------- Logout Route ----------------------
-app.get("/logout", (req, res) => {
-  res.redirect("/");  // Redirect to the home page after logout
-});
-
-
-// Route to render the Edit form (GET request)
-app.get('/book/edit/:id', (req, res) => {
-  Book.findById(req.params.id)
-    .then(book => {
-      res.render('editBook', { book });  // Pass book data to the template
-    })
-    .catch(err => {
-      console.error(err);
-      res.redirect('/viewdata');  // Redirect if there's an error
-    });
-});
-
-
-// Route to handle the Edit form submission (POST request)
-app.post('/book/update/:id', (req, res) => {
-  const { bookName, author, price, description, imageUrl } = req.body;
-  
-  Book.findByIdAndUpdate(req.params.id, { bookName, author, price, description, imageUrl }, { new: true })
-    .then(updatedBook => {
-      return res.redirect('/viewdata');  // Redirect to the viewdata page after the update
-    })
-    .catch(err => {
-      console.error(err);
-      return res.redirect('/viewdata');  // Handle error by redirecting back to the book list page
-    });
-});
-
-
-// ---------------------- Book List Route ----------------------
-app.get("/viewdata", (req, res) => {
-  Book.find({})
-    .then((books) => {
-      res.render("viewdata", { books }); 
-    })
-    .catch((err) => {
-      console.log(err.message);
-      res.render("viewdata", { books: [] }); 
-    });
-});
-
-// Route to delete a book (DELETE request)
-app.get('/book/delete/:id', (req, res) => {
-  Book.findByIdAndDelete(req.params.id)
-      .then(deletedBook => {
-        return res.redirect(req.get("Referrer") || '/viewdata'); 
-      })
-      .catch(err => {
-          console.error(err);
-          return res.redirect(req.get("Referrer") || '/viewdata'); 
-      });
-});
-
-
-// ---------------------- Login Authentication (POST) ----------------------
+// ---------------------- Login & Logout ----------------------
+app.get("/login", (req, res) => res.render("login", { error: null }));
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
+  if (isAdminLoggedIn) {
+    return res.render("login", { error: "Admin is already logged in. Please log out first." });
+  }
   if (username === "Jainam" && password === "Jainam@123") {
-    return res.render("addbook"); 
+    isAdminLoggedIn = true;
+    return res.redirect("/addbook");
   } else {
-    res.render("login", { error: "Invalid username or password" }); 
+    res.render("login", { error: "Invalid username or password" });
   }
 });
-
-// ---------------------- Add Book Form Route ----------------------
-app.get("/addbook", (req, res) => {
-  res.render("addbook");  // Serve the form to add a book
+app.get("/logout", (req, res) => {
+  isAdminLoggedIn = false;
+  res.redirect("/");
 });
 
-// add book routes
-app.post('/addbook', (req, res) => {
+// ---------------------- View Data (Admin) ----------------------
+app.get("/viewdata", (req, res) => {
+  if (!isAdminLoggedIn) return res.redirect("/login");
+  Book.find({})
+    .then((books) => res.render("viewdata", { books }))
+    .catch((err) => {
+      console.log(err.message);
+      res.render("viewdata", { books: [] });
+    });
+});
+
+// ---------------------- Edit Book (GET) ----------------------
+app.get('/book/edit/:id', (req, res) => {
+  if (!isAdminLoggedIn) return res.redirect("/login");
+  Book.findById(req.params.id)
+    .then((book) => res.render('editbook', { book }))
+    .catch((err) => {
+      console.log(err.message);
+      res.render('editbook', { book: null });
+    });
+});
+
+// ---------------------- Edit Book (POST) ----------------------
+app.post('/book/edit/:id', (req, res) => {
+  if (!isAdminLoggedIn) return res.redirect("/login");
   const { bookName, author, price, description, imageUrl, bestseller } = req.body;
+  Book.findByIdAndUpdate(req.params.id, {
+    bookName,
+    author,
+    price,
+    description,
+    imageUrl,
+    bestseller: bestseller === 'on'
+  })
+    .then(() => res.redirect('/viewdata'))
+    .catch((err) => {
+      console.log(err.message);
+      res.redirect('/viewdata');
+    });
+});
 
-  const newBook = {
-      bookName,
-      author,
-      price,
-      description,
-      imageUrl,
-      bestseller: bestseller === 'on', // Checkbox value will be 'on' if checked
-  };
+// ---------------------- Delete Book ----------------------
+app.get('/book/delete/:id', (req, res) => {
+  if (!isAdminLoggedIn) return res.redirect("/login");
+  Book.findByIdAndDelete(req.params.id)
+    .then(() => res.redirect('/viewdata'))
+    .catch((err) => {
+      console.log(err.message);
+      res.redirect('/viewdata');
+    });
+});
 
-  Book.create(newBook)  // Save the new book to the database
-    .then(() => {
-      return res.redirect('/addbook');  // Redirect to the book list page after adding the book
-    })
+// ---------------------- Add Book ----------------------
+app.get("/addbook", (req, res) => {
+  if (!isAdminLoggedIn) return res.redirect("/login"); // ✅ Redirect to login instead
+  return res.render("addbook");
+});
+
+
+app.post('/addbook', (req, res) => {
+  if (!isAdminLoggedIn) return res.redirect("/login");
+  const { bookName, author, price, description, imageUrl, bestseller } = req.body;
+  Book.create({
+    bookName,
+    author,
+    price,
+    description,
+    imageUrl,
+    bestseller: bestseller === 'on'
+  })
+    .then(() => res.redirect('/addbook'))
     .catch((err) => {
       console.error(err);
-      return res.redirect('/addbook');  // Handle error by redirecting back to the book list page
+      res.redirect('/addbook');
+    });
+});
+
+// POST: Update the book
+app.post('/book/update', (req, res) => {
+  const { id, bookName, author, price, description, imageUrl, bestseller } = req.body;
+
+  Book.findByIdAndUpdate(id, {
+    bookName,
+    author,
+    price,
+    description,
+    imageUrl,
+    bestseller: bestseller === 'on' // Convert checkbox value to boolean
+  })
+    .then(() => {
+      console.log("✅ Book Updated Successfully!");
+      res.redirect('/viewdata'); // Redirect to book list
+    })
+    .catch((err) => {
+      console.error(err.message);
+      res.redirect('/viewdata'); // Redirect even if there’s an error
     });
 });
 
@@ -143,6 +148,6 @@ app.post('/addbook', (req, res) => {
 app.listen(port, (err) => {
   if (!err) {
     console.log("Server started on this Port");
-    console.log("http://localhost:" + port); 
+    console.log("http://localhost:" + port);
   }
 });
