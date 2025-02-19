@@ -82,6 +82,7 @@ app.post('/book/edit/:id', (req, res) => {
     .catch((err) => {
       console.log(err.message);
       res.redirect('/viewdata');
+
     });
 });
 
@@ -92,7 +93,7 @@ app.get('/book/delete/:id', (req, res) => {
     .then(() => res.redirect('/viewdata'))
     .catch((err) => {
       console.log(err.message);
-      res.redirect('/viewdata');
+      res.redirect('/viewdata'); 
     });
 });
 
