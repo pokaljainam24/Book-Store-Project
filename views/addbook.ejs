@@ -8,12 +8,18 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <style>
         body {
-            background-color: #f7f7f7;
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            background-image: url('https://media1.giphy.com/media/26n6G8lRMOrYC6rFS/200w.gif?cid=6c09b952l7wuieayo7oqra2x0iqmf1crw1f448izwvr0w1x3&ep=v1_gifs_search&rid=200w.gif&ct=g');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             font-family: 'Arial', sans-serif;
         }
 
         header {
-            background-color: #343a40;
+            background-color: #1e3a8a !important;
             color: #fff;
             padding: 20px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -25,11 +31,23 @@
         }
 
         .container {
-            background-color: #fff;
+            background-color: rgba(25, 23, 23, 0.852);
             padding: 40px;
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             margin-top: 50px;
+        }
+
+        bodyiner::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: inherit;
+            filter: blur(10px);
+            z-index: -1;
         }
 
         .form-label {
@@ -90,8 +108,8 @@
 
 <body style="background-color: black;">
     <header class="d-flex justify-content-between align-items-center">
-        <h2>Book Store</h2>
-        <div>
+        <h2 class="mx-5">Book Store</h2>
+        <div class="mx-5">
             <a class="btn btn-primary" href="/viewdata">View Books</a>
             <a class="btn btn-danger" href="/logout">Logout</a>
         </div>
@@ -99,31 +117,31 @@
 
     <!-- Book Form Section -->
     <section class="container" style="width: 60%;">
-        <h3 class="text-center mb-4">Add a New Book</h3>
+        <h3 class="text-center mb-4 text-light">Add a New Book</h3>
         <form action="/addbook" method="POST">
             <div class="mb-4">
-                <label for="bookName" class="form-label">Book Name</label>
+                <label for="bookName" class="form-label text-light">Book Name</label>
                 <input type="text" class="form-control" id="bookName" name="bookName" required />
             </div>
             <div class="mb-4">
-                <label for="author" class="form-label">Author</label>
+                <label for="author" class="form-label text-light">Author</label>
                 <input type="text" class="form-control" id="author" name="author" required />
             </div>
             <div class="mb-4">
-                <label for="price" class="form-label">Price</label>
+                <label for="price" class="form-label text-light">Price</label>
                 <input type="number" class="form-control" id="price" name="price" required />
             </div>
             <div class="mb-4">
-                <label for="description" class="form-label">Description</label>
+                <label for="description" class="form-label text-light">Description</label>
                 <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
             </div>
             <div class="mb-4">
-                <label for="imageUrl" class="form-label">Image URL</label>
+                <label for="imageUrl" class="form-label text-light">Image URL</label>
                 <input type="url" class="form-control" id="imageUrl" name="imageUrl" required />
             </div>
 
             <div class="mb-4">
-                <label for="bestseller" class="form-check-label">Best Seller</label>
+                <label for="bestseller" class="form-check-label text-light">Best Seller</label>
                 <input type="checkbox" id="bestseller" name="bestseller" class="form-check-input" />
             </div>
 

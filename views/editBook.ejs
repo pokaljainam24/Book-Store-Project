@@ -11,7 +11,7 @@
 <body style="background-color: black; color: white;">
     <div class="container mt-5">
         <h2 class="text-center mb-4">Edit Book</h2>
-        <form action="/book/update/<%= book._id %>" method="POST">
+        <form action="/book/update/<%= book.id %>" method="POST">
             <div class="mb-4">
                 <label for="bookName" class="form-label">Book Name</label>
                 <input type="text" class="form-control" id="bookName" name="bookName" value="<%= book.bookName %>" required />
@@ -32,6 +32,8 @@
                 <label class="form-label">Image URL</label>
                 <input type="text" class="form-control" name="imageUrl" value="<%= book.imageUrl %>" required>
             </div>
+            
+            <!-- ✅ Corrected submit button -->
             <button type="submit" class="btn btn-success">Update Book</button>
             <a href="/viewdata" class="btn btn-secondary">Cancel</a>
         </form>

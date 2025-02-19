@@ -122,17 +122,11 @@ app.post('/addbook', (req, res) => {
 });
 
 // POST: Update the book
-app.post('/book/update', (req, res) => {
-  const { id, bookName, author, price, description, imageUrl, bestseller } = req.body;
+app.post('/book/update/:id', (req, res) => {
+  let { id, bestseller } = req.body;
+  bestseller = bestseller === "on";
 
-  Book.findByIdAndUpdate(id, {
-    bookName,
-    author,
-    price,
-    description,
-    imageUrl,
-    bestseller: bestseller === 'on' // Convert checkbox value to boolean
-  })
+  Book.findByIdAndUpdate(id, req.body)
     .then(() => {
       console.log("✅ Book Updated Successfully!");
       res.redirect('/viewdata'); // Redirect to book list
