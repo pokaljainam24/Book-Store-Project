@@ -7,6 +7,7 @@ const port = 8059;
 app.set("view engine", "ejs");
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
+app.set('views', 'views');
 
 // Track admin login state
 let isAdminLoggedIn = false;
@@ -55,6 +56,17 @@ app.get("/viewdata", (req, res) => {
     });
 });
 
+// ---------------------- view All Data -----------------------
+app.get('/view-all', async (req, res) => {
+  try {
+    const allBooks = await Book.find(); // Fetch all books
+    res.render('view-all', { allBooks });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server Error');
+  }
+});
+
 // ---------------------- Edit Book (GET) ----------------------
 app.get('/book/edit/:id', (req, res) => {
   if (!isAdminLoggedIn) return res.redirect("/login");
@@ -93,7 +105,7 @@ app.get('/book/delete/:id', (req, res) => {
     .then(() => res.redirect('/viewdata'))
     .catch((err) => {
       console.log(err.message);
-      res.redirect('/viewdata'); 
+      res.redirect('/viewdata');
     });
 });
 

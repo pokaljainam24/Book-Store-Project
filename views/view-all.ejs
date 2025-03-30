@@ -1,0 +1,26 @@
+<%- include('partials/header') %>
+
+<div class="container">
+    <h2 class="text-center">All Books</h2>
+
+    <div class="row">
+        <% allBooks.forEach((book) => { %>
+            <div class="col-md-3">
+                <div class="product-item">
+                    <figure class="product-style">
+                        <img src="<%= book.imageUrl %>" alt="<%= book.bookName %>" class="product-item">
+                        <button type="button" class="add-to-cart" data-product-tile="add-to-cart">Add to Cart</button>
+                    </figure>
+                    <figcaption>
+                        <h3><%= book.bookName %></h3>
+                        <span><%= book.description %></span>
+                        <span><%= book.author %></span>
+                        <div class="item-price">$ <%= book.price %></div>
+                    </figcaption>
+                </div>
+            </div>
+        <% }); %>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
