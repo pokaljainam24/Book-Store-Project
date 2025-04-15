@@ -12,6 +12,18 @@ app.set('views', 'views');
 // Track admin login state
 let isAdminLoggedIn = false;
 
+// ---------------------- Signup ----------------------
+app.get("/signup", (req, res) => res.render("signup", { error: null }));
+
+app.post("/signup", (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res.render("signup", { error: "All fields are required" });
+  }
+  // For simplicity, just redirect to login after signup (implement proper user handling later)
+  res.redirect("/login");
+});
+
 // ---------------------- Home Route ----------------------
 app.get("/", (req, res) => {
   Book.find({})
@@ -94,7 +106,6 @@ app.post('/book/edit/:id', (req, res) => {
     .catch((err) => {
       console.log(err.message);
       res.redirect('/viewdata');
-
     });
 });
 
@@ -114,7 +125,6 @@ app.get("/addbook", (req, res) => {
   if (!isAdminLoggedIn) return res.redirect("/login"); // ✅ Redirect to login instead
   return res.render("addbook");
 });
-
 
 app.post('/addbook', (req, res) => {
   if (!isAdminLoggedIn) return res.redirect("/login");
@@ -149,7 +159,6 @@ app.post('/book/update/:id', (req, res) => {
       res.redirect('/viewdata'); // Redirect even if there’s an error
     });
 });
-
 
 // ---------------------- Start Server ----------------------
 app.listen(port, (err) => {
