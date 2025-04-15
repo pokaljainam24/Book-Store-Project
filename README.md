@@ -60,18 +60,16 @@ A simple Book Management system built with Node.js, Express, and MongoDB. This a
 
 ## Demo & Live-link
 
-![image](https://github.com/user-attachments/assets/441771cd-e191-46b5-ac43-a076e825a3fe)
-![image](https://github.com/user-attachments/assets/7b1dbd6c-c82f-4ebf-a144-8e104dab4dfc)
-![image](https://github.com/user-attachments/assets/c26d1cf6-1191-437b-a4e8-f87a4007fc6d)
-![image](https://github.com/user-attachments/assets/3425761e-9f10-459b-bd8b-4402e84bf987)
+1. Login Page ![image](https://github.com/user-attachments/assets/daf16b94-6104-4958-bb01-e17c30f2943f)
+2. Home Page ![image](https://github.com/user-attachments/assets/678255a5-bc65-44df-b15c-87f3e482a434)
 
-[Live Link](https://book-store-project-pfev.onrender.com)
+
 
 ## How to Use
 
 **For Admin**:
 
-- Navigate to /login to log in with the admin credentials (username: Jainam, password: Jainam@123).
+- Navigate to /login to log in with the admin credentials (username: Jainam, password: JainamJainam).
 - After login, you'll be redirected to the /addbook page to add new books.
 - To manage the books, go to /viewdata, where you can edit or delete books.
 - Logout via the /logout route.
